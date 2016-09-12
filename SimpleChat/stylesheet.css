@@ -1,0 +1,25 @@
+#contentWrap {
+    display: none;
+}
+
+#chatWrap {
+    float: left;
+    border: 1px #000 solid;
+}
+
+#chat {
+    height: 500px;
+}
+
+.error {
+    color: red;
+}
+
+.whisper {
+    color: gray;
+    font-style: italic;
+}
+
+#users {
+    color: green;
+}

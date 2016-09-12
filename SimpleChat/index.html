@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SimpleChat by Oz</title>
+    <link rel='stylesheet' type='text/css' href='stylesheet.css'/>
+
+</head>
+
+<body>
+
+<div id="usernameWrap">
+    <p>Enter a username:</p>
+    <p id="usernameError"></p>
+    <form id="setUsername">
+        <input size="35" id="username"/>
+        <input type="submit" onclick="false">
+    </form>
+</div>
+
+<div id="contentWrap">
+    <div id="chatWrap">
+        <div id="chat"></div>
+        <form id="send-message">
+            <input size="35" id="message"/>
+            <input type="submit" value="Send"/>
+        </form>
+    </div>
+    <div id="users"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    jQuery(function ($) {
+        var socket = io.connect();
+
+        var $usernameForm = $('#setUsername');
+        var $usernameError = $('#usernameError');
+        var $usernameBox = $('#username');
+        var $users = $('#users');
+
+        $usernameForm.submit(function (e) {
+            e.preventDefault();
+            socket.emit('new user', $usernameBox.val(), function (nameAvailable) {
+                if (nameAvailable) {
+                    $('#usernameWrap').hide();
+                    $('#contentWrap').show();
+                } else {
+                    $usernameError.html("Enter a different username!");
+                }
+            });
+            $usernameBox.val('');
+
+        })
+
+        var $messageForm = $('#send-message');
+        var $messageBox = $('#message');
+        var $chat = $('#chat');
+
+        $messageForm.submit(function (e) {
+            console.log("User sent message", $messageBox.val());
+            e.preventDefault();
+            socket.emit('send message', $messageBox.val(), function (err) {
+                $chat.append('<span class="error">' + err + '</span><br/>');
+            });
+            $messageBox.val('');
+        });
+
+        socket.on('users', function (data) {
+            var html = '';
+            html += 'Online:' + '<br/>';
+            for (var i = 0; i < data.length; i++) {
+                html += data[i] + '<br/>';
+            }
+            $users.html(html);
+        });
+
+        socket.on('whisper', function (data) {
+            $chat.append('<span class="whisper"><b>' + data.name + ':</b> ' + data.msg + "</span><br/>");
+        });
+
+        socket.on('new message', function (data) {
+            displayMessage(data);
+        });
+
+        socket.on('load old messages', function (docs) {
+            for (var i = docs.length - 1; i <= 0; i--) {
+                displayMessage(docs[i]);
+            }
+        });
+
+        function displayMessage(data) {
+            $chat.append('<span class="msg"><b>' + data.name + ':</b> ' + data.msg + "</span><br/>");
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>
