@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MC Incremental</title>
+	<link rel='stylesheet' type='text/css' href='interface.css'/>
+	<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="gamecode.js"></script>
+</head>
+
+<body>
+
+	<header id="header" align="center">Machines</header>
+
+	<div id="container">
+
+		<main id="center" class="column">
+		<h3>Buy Machine</h3>
+			<button onclick="buyAutomator(100)">Automator <span id="availableAutomators">0</span></button> 
+			<span id="automatorCost">10</span> items - Produces items
+			<br>
+			<button onclick="buyQuarry(100)">Quarry <span id="availableQuarries">0</span></button> 
+			<span id="quarryCost">10000</span> items - Produces items
+			<br>
+			<button onclick="buyRecycler(100)">Recycler <span id="availableRecyclers">0</span></button> 
+			<span id="recyclerCost">100000</span> items - Produces 1 scrap. Consumes: 10 items
+			<br>
+			<button onclick="buyFabricator(100)">Fabricator <span id="availableFabricators">0</span></button> 
+			<span id="fabricatorCost">1000000</span> items - Produces 1 UU-matter. Consumes: 10 scraps
+		</main>
+
+		<nav id="left" class="column">
+			<h2 style="color:grey">			Items: 		<br><span id="items">0</span></h2>
+			<h2 style="color:#653E1D">		Scraps: 	<br><span id="scraps">0</span></h2>
+			<h2 style="color:lightpink" >	UU-matter: 	<br><span id="UUmatter">0</span></h2>
+			<h3>Add items</h3>
+			<ul>
+				<li><button onclick="add(1)">		Add 1		</button></li>
+				<li><button onclick="add(100)">		Add 100		</button></li>
+				<li><button onclick="add(1000)">	Add 1000	</button></li>
+				<li><button onclick="add(10000)">	Add 10k		</button></li>
+				<li><button onclick="add(1000000)">	Add 1M		</button></li>
+				<li><button onclick="resetGame()">	Reset		</button></li>
+			</ul>
+		</nav>
+
+		<div id="right" class="column">
+			<h3>Automators: 	<span id="automators">	0	</span>	</h3>
+			<h3>Quarries:		<span id="quarries">	0	</span>	</h3>
+			<h3>Recyclers:		<span id="recyclers">	0	</span>	</h3>
+			<h3>Fabricators:	
+				<span id="fabricators">	0	</span> 
+				(<span id="fabricatorProgress">0</span>%)	
+			</h3>
+			
+		</div>
+
+	</div>
+
+	<div id="footer-wrapper">
+		<footer id="footer"><p></p></footer>
+	</div>
+
+</body>
+
+</html>
