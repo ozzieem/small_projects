@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <title>Mass Search Youtube</title>
+
+    <style>
+        .container {
+            font-family: Calibri;
+        }
+
+        #filearea, #textbox {
+            display: table;
+            margin: 0 auto;
+        }
+
+        #entrylist {
+            font-family: Verdana;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" align="center">
+    <div id="info">
+        <h2>Mass Search Youtube</h2>
+        <p>Make sure to have only one search entry per line in order for this to work properly.</p>
+    </div>
+    <div id="filearea"><input type="file" id="file"/></div>
+    <br>
+    <div id="textbox">
+        <textarea id="inputtext" rows="4" cols="50"></textarea><br>
+        <input type="submit" id="entertext"/>
+    </div>
+
+    <div id="entrylist" align="left">
+        <input id="openlinks" type="button" value="Open all links"/>
+        <output id="list"></output>
+    </div>
+</div>
+<script>
+    document.getElementById('file').addEventListener('change', fileSelect);
+    document.getElementById('entertext').addEventListener('click', readText);
+    document.getElementById('openlinks').addEventListener('click', openLinks);
+
+    var regex = /(\r\n|\n|\r)/gm;
+    var supported_files = ["txt", "csv"];
+    var contents_list;
+
+    function fileSelect(evt) {
+        var file = evt.target.files[0];
+
+        try {
+            if (!file) {
+                throw "Failed to load file.";
+            }
+
+            var file_ext = file.name.split('.').pop();
+            if (!(supported_files.indexOf(file_ext) > -1)) {
+                var err_msg = "Unsupported file: " + file_ext + ".\nSupported files: ";
+                for (var i = 0; i < supported_files.length; i++) {
+                    err_msg += supported_files[i] + " ";
+                }
+                throw err_msg;
+            }
+            readFile(file);
+        }
+        catch (err) {
+            alert(err);
+        }
+    }
+
+    function readFile(file) {
+        var reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = function (e) {
+            console.log("Filename: " + file.name + "\n"
+                    + "Type: " + file.type + "\n"
+                    + "Size: " + file.size + " bytes\n");
+
+            var contents = e.target.result;
+
+            generateContent(contents);
+        }
+    }
+
+    function readText() {
+        var text = document.getElementById("inputtext").value;
+        generateContent(text);
+    }
+
+    function generateContent(textContent) {
+        // Splits each line and removes unnecessary symbols
+        contents_list = textContent.split("\n").filter(function (e) {
+            return e.replace(regex, "")
+        }).sort();
+        //console.log(contents_list);        // DEBUG
+        generateLinks();
+    }
+
+    function generateLinks() {
+        var output = "<ul><h2>Links to Youtube.com:</h2><ul>";
+        for (var name = 0; name < contents_list.length; name++) {
+            var url = createURL(contents_list[name]);
+            output += "<li><a href=" + url + " target='_blank'>" + contents_list[name] + "</a></li>";
+        }
+        document.getElementById('list').innerHTML = "</ul>" + output + "</ul>";
+        document.getElementById('entrylist').style.display = "block";    // Displays list of searches
+    }
+
+    function createURL(entry) {
+        entry = entry.replace(/ /g, "+"); // Replace all spaces with '+'
+        var url = "https://www.youtube.com/results?search_query="
+        url += entry;
+        return url;
+    }
+
+    function openLinks() {
+        var confirm_msg = "Open (" + contents_list.length + ") tabs in the current window?.";
+        var cfm = confirm(confirm_msg);
+        if (cfm) {
+            for (var name = 0; name < contents_list.length; name++) {
+                openInNewTab(contents_list[name]);
+            }
+        }
+    }
+
+    function openInNewTab(entry) {
+        var url = createURL(entry);
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
